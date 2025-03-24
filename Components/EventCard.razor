@@ -1,16 +1,56 @@
-@* filepath: /Components/EventCard.razor *@
 @namespace EventEase.Components
 
-<div class="event-card">
-    <h3>@EventName</h3>
-    <p><strong>Date:</strong> @Date</p>
-    <p><strong>Location:</strong> @Location</p>
-    <a href="@DetailsLink" class="btn btn-primary">View Details</a>
-</div>
+@if (IsValid)
+{
+    <div class="event-card">
+        <h3>@EventName</h3>
+        <p><strong>Date:</strong> @Date</p>
+        <p><strong>Location:</strong> @Location</p>
+        <a href="@DetailsLink" class="btn btn-primary">View Details</a>
+    </div>
+}
+else
+{
+    <div class="event-card error">
+        <p class="text-danger">Invalid event details provided.</p>
+    </div>
+}
 
 @code {
     [Parameter] public string EventName { get; set; } = string.Empty;
     [Parameter] public string Date { get; set; } = string.Empty;
     [Parameter] public string Location { get; set; } = string.Empty;
     [Parameter] public string DetailsLink { get; set; } = string.Empty;
+
+    private bool IsValid => Validate();
+    protected override bool ShouldRender()
+        {
+            // Only render if the validation state changes
+            return IsValid;
+        }
+    private bool Validate()
+    {
+        // Ensure all required fields are provided
+        if (string.IsNullOrWhiteSpace(EventName) ||
+            string.IsNullOrWhiteSpace(Date) ||
+            string.IsNullOrWhiteSpace(Location) ||
+            string.IsNullOrWhiteSpace(DetailsLink))
+        {
+            return false;
+        }
+
+        // Validate the date format (optional)
+        if (!DateTime.TryParse(Date, out _))
+        {
+            return false;
+        }
+
+        // Validate the DetailsLink (optional: ensure it's a valid URL)
+        if (!Uri.IsWellFormedUriString(DetailsLink, UriKind.RelativeOrAbsolute))
+        {
+            return false;
+        }
+
+        return true;
+    }
 }

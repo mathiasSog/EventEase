@@ -5,19 +5,35 @@
 
 <h2>Event List</h2>
 
-@foreach (var eventItem in Events)
-{
-    <EventCard EventName="@eventItem.Name"
-           Date="@eventItem.Date"
-           Location="@eventItem.Location"
-           DetailsLink="@($"/events/details/{eventItem.Id}")" />
-}
+
+<Virtualize Items="@Events" Context="eventItem">
+    <EventCard @key="eventItem.Id"
+               EventName="@eventItem.Name"
+               Date="@eventItem.Date"
+               Location="@eventItem.Location"
+               DetailsLink="@($"/events/details/{eventItem.Id}")" />
+</Virtualize>
+
+<button @onclick="LoadMoreEvents" class="btn btn-primary">Load More</button>
 
 @code {
-    private List<Event> Events = new()
+    private List<Event> Events = new();
+
+    protected override async Task OnInitializedAsync()
     {
-        new Event { Id = 1, Name = "Tech Conference", Date = "2025-04-15", Location = "New York" },
-        new Event { Id = 2, Name = "Music Festival", Date = "2025-05-20", Location = "Los Angeles" },
-        new Event { Id = 3, Name = "Art Expo", Date = "2025-06-10", Location = "Chicago" }
-    };
+        // Simulate initial data load
+        await LoadMoreEvents();
+    }
+
+    private async Task LoadMoreEvents()
+    {
+        // Simulate fetching more data
+        await Task.Delay(500); // Simulate API delay
+        var newEvents = new List<Event>
+        {
+            new Event { Id = Events.Count + 1, Name = "New Event", Date = "2025-07-01", Location = "Boston" },
+            new Event { Id = Events.Count + 2, Name = "Another Event", Date = "2025-08-15", Location = "Seattle" }
+        };
+        Events.AddRange(newEvents);
+    }
 }

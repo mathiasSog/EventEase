@@ -101,3 +101,19 @@ a, .btn-link {
 code {
     color: #c02d76;
 }
+.event-card.error {
+    border: 1px solid red;
+    background-color: #ffe6e6;
+    padding: 10px;
+}
+
+.text-danger {
+    color: red;
+}
+.event-card {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+}
