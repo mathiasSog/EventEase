@@ -1,22 +1,75 @@
 @* filepath: /Pages/Registration.razor *@
 @page "/register/{EventId:int}"
+@using System.ComponentModel.DataAnnotations
+@inject EventEase.Services.UserSessionService UserSessionService
 
 <h2>Register for Event</h2>
 
 <p>You are registering for event ID: @EventId</p>
 
-<form>
+<EditForm Model="@RegistrationModel" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
     <div>
         <label for="name">Name:</label>
-        <input type="text" id="name" />
+        <input type="text" id="name" class="form-control" @bind="RegistrationModel.Name" />
+        <ValidationMessage For="@(() => RegistrationModel.Name)" />
     </div>
     <div>
         <label for="email">Email:</label>
-        <input type="email" id="email" />
+        <input type="email" id="email" class="form-control" @bind="RegistrationModel.Email" />
+        <ValidationMessage For="@(() => RegistrationModel.Email)" />
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+</EditForm>
+
+@if (Attendees.Count > 0)
+{
+    <h3>Attendees for Event ID: @EventId</h3>
+    <ul>
+        @foreach (var attendee in Attendees)
+        {
+            <li>@attendee</li>
+        }
+    </ul>
+}
 
 @code {
     [Parameter] public int EventId { get; set; }
+
+    private EventRegistrationModel RegistrationModel { get; set; } = new();
+    private List<string> Attendees { get; set; } = new();
+
+    private void HandleValidSubmit()
+    {
+        // Save user session
+        UserSessionService.CurrentUserName = RegistrationModel.Name;
+        UserSessionService.CurrentUserEmail = RegistrationModel.Email;
+
+        // Register attendance
+        UserSessionService.RegisterAttendance(EventId, RegistrationModel.Name);
+
+        // Update attendees list
+        Attendees = UserSessionService.GetAttendees(EventId);
+
+        Console.WriteLine($"Registration successful for {RegistrationModel.Name} with email {RegistrationModel.Email}");
+    }
+
+    protected override void OnInitialized()
+    {
+        // Load attendees for the event
+        Attendees = UserSessionService.GetAttendees(EventId);
+    }
+
+    public class EventRegistrationModel
+    {
+        [Required(ErrorMessage = "Name is required.")]
+        [StringLength(50, ErrorMessage = "Name cannot exceed 50 characters.")]
+        public string Name { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Email is required.")]
+        [EmailAddress(ErrorMessage = "Invalid email address.")]
+        public string Email { get; set; } = string.Empty;
+    }
 }
