@@ -1,0 +1,22 @@
+@* filepath: /Pages/Registration.razor *@
+@page "/register/{EventId:int}"
+
+<h2>Register for Event</h2>
+
+<p>You are registering for event ID: @EventId</p>
+
+<form>
+    <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" />
+    </div>
+    <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" />
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+@code {
+    [Parameter] public int EventId { get; set; }
+}

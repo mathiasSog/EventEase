@@ -1,0 +1,23 @@
+@* filepath: /Pages/EventList.razor *@
+@page "/events"
+@using EventEase.Components
+@using EventEase.Models
+
+<h2>Event List</h2>
+
+@foreach (var eventItem in Events)
+{
+    <EventCard EventName="@eventItem.Name"
+           Date="@eventItem.Date"
+           Location="@eventItem.Location"
+           DetailsLink="@($"/events/details/{eventItem.Id}")" />
+}
+
+@code {
+    private List<Event> Events = new()
+    {
+        new Event { Id = 1, Name = "Tech Conference", Date = "2025-04-15", Location = "New York" },
+        new Event { Id = 2, Name = "Music Festival", Date = "2025-05-20", Location = "Los Angeles" },
+        new Event { Id = 3, Name = "Art Expo", Date = "2025-06-10", Location = "Chicago" }
+    };
+}

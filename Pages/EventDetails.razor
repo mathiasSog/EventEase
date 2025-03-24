@@ -1,0 +1,37 @@
+@* filepath: /Pages/EventDetails.razor *@
+@page "/events/details/{EventId:int}"
+@using EventEase.Models
+
+<h2>Event Details</h2>
+
+@if (Event != null)
+{
+    <p><strong>Name:</strong> @Event.Name</p>
+    <p><strong>Date:</strong> @Event.Date</p>
+    <p><strong>Location:</strong> @Event.Location</p>
+    <a href="/register/@Event.Id" class="btn btn-success">Register</a>
+}
+else
+{
+    <p>Loading...</p>
+}
+
+@code {
+    [Parameter] public int EventId { get; set; }
+   
+    private Event? Event;
+
+    protected override void OnInitialized()
+    {
+        // Mock data for demonstration
+        var events = new List<Event>
+        {
+            new Event { Id = 1, Name = "Tech Conference", Date = "2025-04-15", Location = "New York" },
+            new Event { Id = 2, Name = "Music Festival", Date = "2025-05-20", Location = "Los Angeles" },
+            new Event { Id = 3, Name = "Art Expo", Date = "2025-06-10", Location = "Chicago" }
+        };
+
+        Event = events.FirstOrDefault(e => e.Id == EventId);
+    }
+    
+}
